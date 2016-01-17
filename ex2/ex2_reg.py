@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import minimize
 
-from common_functions import load_data, add_zero_feature, lr_accuracy, cf_lr_norm as cost_function, gf_lr_norm as grad_function
+from common_functions import load_data, add_zero_feature, lr_accuracy, cf_lr_reg as cost_function, gf_lr_reg as grad_function
 
 def map_feature(X1, X2, degree=6):
     return add_zero_feature(np.hstack([X1**(i-j)*X2**j for i in range(1, degree+1) for j in range(i+1)]))

@@ -3,7 +3,7 @@ import numpy as np
 
 from scipy.optimize import minimize
 
-from common_functions import load_data, add_zero_feature, lr_accuracy, cf_lr_not_norm as cost_function, gf_lr_not_norm as grad_function
+from common_functions import load_data, add_zero_feature, lr_accuracy, cf_lr as cost_function, gf_lr as grad_function
 
 if __name__ == '__main__':
     X, y = load_data('ex2data1.txt')

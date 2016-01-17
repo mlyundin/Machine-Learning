@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import minimize
 
-from common_functions import add_zero_feature, cf_lr_not_norm as cost_function, gf_lr_not_norm as grad_function, \
-cf_lr_norm as cost_function_nor, gf_lr_norm as grad_function_nor
+from common_functions import add_zero_feature, cf_lr as cost_function, gf_lr as grad_function, \
+cf_lr_reg as cost_function_reg, gf_lr_reg as grad_function_reg
 
 if __name__ == '__main__':
     data = sio.loadmat('ex3data1.mat')
@@ -43,8 +43,8 @@ if __name__ == '__main__':
 
     # Use regularization
     lambda_coef = 0.1
-    all_theta = np.vstack([minimize(cost_function_nor, initial_theta, method='BFGS', jac=grad_function_nor, options={'disp': True, 'maxiter':100},
-                    args=(X, (y == i).astype(int), lambda_coef)).x for i in range(num_labels)])
+    all_theta = np.vstack([minimize(cost_function_reg, initial_theta, method='BFGS', jac=grad_function_reg, options={'disp': True, 'maxiter':100},
+                                    args=(X, (y == i).astype(int), lambda_coef)).x for i in range(num_labels)])
     y_pred = np.argmax(np.dot(X, all_theta.T), axis=1)
 
     print 'Training Set Accuracy: {}'.format(np.mean(y_pred == y.ravel()) * 100)

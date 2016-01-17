@@ -54,7 +54,7 @@ def lr_accuracy(X, y, theta):
     return np.mean(p == y.ravel())*100
 
 @matrix_args
-def cf_lr_not_norm(theta, X, y):
+def cf_lr(theta, X, y):
     theta = theta.T
     m = len(y)
     Z = sigmoid(X*theta)
@@ -63,7 +63,7 @@ def cf_lr_not_norm(theta, X, y):
     return J[0, 0]
 
 @matrix_args
-def gf_lr_not_norm(theta, X, y):
+def gf_lr(theta, X, y):
     theta = theta.T
     m = len(y)
     res = (X.T*(sigmoid(X*theta)-y))/m
@@ -71,7 +71,7 @@ def gf_lr_not_norm(theta, X, y):
     return res.A1
 
 @matrix_args_array_only
-def cf_lr_norm(theta, X, y, lambda_coef):
+def cf_lr_reg(theta, X, y, lambda_coef):
     theta = theta.T
     m = len(y)
     Z = sigmoid(X*theta)
@@ -80,7 +80,7 @@ def cf_lr_norm(theta, X, y, lambda_coef):
     return J[0, 0]
 
 @matrix_args_array_only
-def gf_lr_norm(theta, X, y, lambda_coef):
+def gf_lr_reg(theta, X, y, lambda_coef):
     theta = np.matrix(theta.T, copy=True)
 
     m = len(y)
