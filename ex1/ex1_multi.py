@@ -2,12 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.linalg import pinv
 
-from common_functions import load_data, J_liner_regression, add_zero_feature, gradient_descent, matrix_args
-
-def feature_normalize(X):
-    mu = np.mean(X, axis=0)[np.newaxis, :]
-    sigma = np.std(X, axis=0)[np.newaxis, :]
-    return mu, sigma, (X-mu)/sigma
+from common_functions import load_data, J_liner_regression, add_zero_feature, gradient_descent, matrix_args, feature_normalize
 
 if __name__ == '__main__':
     X, y = load_data('ex1data2.txt')

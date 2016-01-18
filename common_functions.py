@@ -74,6 +74,7 @@ def gf_lr(theta, X, y):
 def cf_lr_reg(theta, X, y, lambda_coef):
     theta = theta.T
     m = len(y)
+    lambda_coef = float(lambda_coef)
     Z = sigmoid(X*theta)
     J = (-y.T * np.log(Z) - (1-y).T * np.log(1-Z))/m + (lambda_coef/(2 * m))*theta.T*theta
 
@@ -82,7 +83,7 @@ def cf_lr_reg(theta, X, y, lambda_coef):
 @matrix_args_array_only
 def gf_lr_reg(theta, X, y, lambda_coef):
     theta = np.matrix(theta.T, copy=True)
-
+    lambda_coef = float(lambda_coef)
     m = len(y)
     Z = X*theta
     theta[0, 0] = 0
@@ -90,3 +91,8 @@ def gf_lr_reg(theta, X, y, lambda_coef):
     res = (X.T*(sigmoid(Z)-y))/m + (lambda_coef/m)*theta
 
     return res.A1
+
+def feature_normalize(X):
+    mu = np.mean(X, axis=0)[np.newaxis, :]
+    sigma = np.std(X, axis=0)[np.newaxis, :]
+    return mu, sigma, (X-mu)/sigma
