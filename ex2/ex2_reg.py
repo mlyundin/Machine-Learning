@@ -28,8 +28,10 @@ if __name__ == '__main__':
     u = np.linspace(-1, 1.5, 50)
     v = np.linspace(-1, 1.5, 50)
 
-    temp = np.array([[i, j] for i in u for j in v])
-    temp_X = map_feature(*np.hsplit(temp, 2))
+    X1, X2 = np.meshgrid(u, v)
+    X1, X2 = X1.reshape(-1, 1), X2.reshape(-1, 1)
+
+    temp_X = map_feature(X1, X2)
     z = np.dot(temp_X, theta).reshape(len(u), len(v))
 
     plt.plot(x1[f_y == 0], x2[f_y == 0], 'yo')
