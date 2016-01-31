@@ -66,7 +66,7 @@ if __name__ == '__main__':
     plt.show()
 
     img_size = img.shape
-    X = img.reshape(img_size[0]*img_size[1], 3)
+    X = img.reshape(img_size[0]*img_size[1], img_size[2])
     K = 16
     max_iters = 10
 
