@@ -80,34 +80,21 @@ if __name__ == '__main__':
     X = data['X']
     Xval = data['Xval']
     yval = data['yval'].astype(np.float64).ravel()
-
     visualize_boundary(X, y)
 
-    best_score = 0
-    best_model = None
+    C_coefs = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
+    sigma_coefs = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 
-    for C in [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]:
-        for sigma in [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]:
-
-            gamma = sigma_to_gamma(sigma)
-            svc = SVC(C=C, tol=0.001, kernel='rbf', gamma=gamma)
-            svc.fit(X, y)
-
-            score = svc.score(Xval, yval)
-
-            if score > best_score:
-                best_model, best_score = svc, score
-
-
+    svcs = (SVC(C=C, gamma=sigma_to_gamma(sigma), tol=0.001, kernel='rbf') for C in C_coefs for sigma in sigma_coefs)
+    best_model = max(svcs, key=lambda svc: svc.fit(X, y).score(Xval, yval))
     visualize_boundary(X, y, {'Best model(C={}, gamma={})'.format(best_model.C, best_model.gamma): best_model})
 
     #Let's do the similar thing but using sklearn feature
     X_all = np.vstack((X, Xval))
     y_all = np.concatenate((y, yval))
 
-    parameters = {'C':[0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30], 'gamma': map(lambda x: 1.0/(x**2), [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30])}
+    parameters = {'C':C_coefs, 'gamma': map(sigma_to_gamma, sigma_coefs)}
     svr = SVC(tol=0.001, kernel='rbf')
     clf = GridSearchCV(svr, parameters, cv=2)
     clf.fit(X_all, y_all)
-
     visualize_boundary(X, y, {'Best model(C={}, gamma={})'.format(clf.best_params_['C'], clf.best_params_['gamma']): clf})

@@ -5,8 +5,6 @@ import scipy.io as sio
 from collections import namedtuple
 from functools import partial
 
-from common_functions import matrix_args
-
 Model = namedtuple('SVMModelResult', ['X', 'y', 'kernelFunction', 'b', 'alphas', 'w'])
 
 def svm_train(X, Y, C, kernelFunction, tol=0.001, max_passes=5):
@@ -233,5 +231,3 @@ if __name__ == '__main__':
                 best_model = model
 
     visualize_boundary(X, y, best_model)
-
-
