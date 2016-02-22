@@ -12,13 +12,17 @@ def find_closest_centroids(X, centroids):
     diff = X[np.newaxis, :, :] - centroids[:, np.newaxis, :]
     return np.argmin(np.sum(diff**2, axis=-1), axis=0)
 
-def compute_centroids(X, idx, K):
+def compute_centroids_slow(X, idx, K):
     return np.array([np.mean(X[idx.ravel() == i, :], axis=0) for i in range(K)])
+
+def compute_centroids(X, idx, K):
+    idx = np.arange(K).reshape(-1, 1) == idx.reshape(1, -1)
+    return idx.dot(X)/(np.sum(idx, axis=1).reshape(-1, 1))
 
 def run_kmeans(X, initial_centroids, max_iters, plot_progress=False):
     previous_centroids = initial_centroids
     K = len(previous_centroids)
-    for i in xrange(max_iters):
+    for _ in xrange(max_iters):
         idx = find_closest_centroids(X, previous_centroids)
         centroids = compute_centroids(X, idx, K)
         if (centroids == previous_centroids).all():
