@@ -5,8 +5,12 @@ import numpy as np
 import scipy.io as sio
 import itertools
 
-def find_closest_centroids(X, centroids):
+def find_closest_centroids_slow(X, centroids):
     return np.array([np.argmin([np.sum((x-c)**2) for c in centroids]) for x in X])
+
+def find_closest_centroids(X, centroids):
+    diff = X[np.newaxis, :, :] - centroids[:, np.newaxis, :]
+    return np.argmin(np.sum(diff**2, axis=-1), axis=0)
 
 def compute_centroids(X, idx, K):
     return np.array([np.mean(X[idx.ravel() == i, :], axis=0) for i in range(K)])
