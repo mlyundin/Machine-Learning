@@ -8,15 +8,13 @@ def sigmoid_gradient(z):
     return np.multiply(sigmoid(z), 1-sigmoid(z))
 
 @matrix_args_array_only
-def cf_nn(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, lambda_coef):
+def cf_nn(nn_params, input_layer_size, hidden_layer_size, num_labels, X, Y, lambda_coef):
 
     Theta1 = nn_params[0, :hidden_layer_size * (input_layer_size + 1)].reshape((hidden_layer_size, (input_layer_size + 1)))
     Theta2 = nn_params[0, hidden_layer_size * (input_layer_size + 1):].reshape((num_labels, (hidden_layer_size + 1)))
 
-    m = len(y)
-    Y = np.zeros((num_labels, m))
-    for i in range(m):
-        Y[y[i, 0]-1, i] = 1
+    m = Y.shape[1]
+    Y = Y.A
 
     A_1 = X
     Z_2 = Theta1*A_1.T
@@ -37,15 +35,12 @@ def cf_nn(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, lamb
     return J
 
 @matrix_args_array_only
-def gf_nn(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, lambda_coef):
+def gf_nn(nn_params, input_layer_size, hidden_layer_size, num_labels, X, Y, lambda_coef):
 
     Theta1 = nn_params[0, :hidden_layer_size * (input_layer_size + 1)].reshape((hidden_layer_size, (input_layer_size + 1)))
     Theta2 = nn_params[0, hidden_layer_size * (input_layer_size + 1):].reshape((num_labels, (hidden_layer_size + 1)))
 
-    m = len(y)
-    Y = np.matrix(np.zeros((num_labels, m)), copy=False)
-    for i in range(m):
-        Y[y[i, 0]-1, i] = 1
+    m = Y.shape[1]
 
     A_1 = X
     Z_2 = Theta1*A_1.T
@@ -59,14 +54,9 @@ def gf_nn(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, lamb
     Theta1_grad = (DELTA_2 * A_1)/m
     Theta2_grad = (DELTA_3 * A_2.T)/m
 
-    temp_Theta1 = np.copy(Theta1)
-    temp_Theta2 = np.copy(Theta2)
-    temp_Theta1[:, 0] = 0
-    temp_Theta2[:, 0] = 0
-
     lambda_coef = float(lambda_coef)
-    Theta1_grad += (lambda_coef/m)*temp_Theta1
-    Theta2_grad += (lambda_coef/m)*temp_Theta2
+    Theta1_grad[:, 1:] += (lambda_coef/m)*Theta1[:, 1:]
+    Theta2_grad[:, 1:] += (lambda_coef/m)*Theta2[:, 1:]
 
     return np.concatenate((Theta1_grad.A1, Theta2_grad.A1))
 
@@ -90,9 +80,12 @@ if __name__ == '__main__':
     input_layer_size  = 400
     hidden_layer_size = 25
     num_labels = 10
+    m = len(y)
+
+    Y = (np.arange(num_labels)[:, np.newaxis] == (y.T-1)).astype(float)
 
     for lambda_coef in (0, 1):
-        print 'Cost function = {}, lambda = {}'.format(cf_nn(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, lambda_coef), lambda_coef)
+        print 'Cost function = {}, lambda = {}'.format(cf_nn(nn_params, input_layer_size, hidden_layer_size, num_labels, X, Y, lambda_coef), lambda_coef)
 
     initial_Theta1 = rand_initialize_weights(input_layer_size, hidden_layer_size)
     initial_Theta2 = rand_initialize_weights(hidden_layer_size, num_labels)
@@ -100,7 +93,7 @@ if __name__ == '__main__':
     initial_nn_params = np.concatenate((initial_Theta1.ravel(), initial_Theta2.ravel()))
 
     res = minimize(cf_nn, initial_nn_params, method='L-BFGS-B', jac=gf_nn, options={'disp': True, 'maxiter':100},
-                        args=(input_layer_size, hidden_layer_size, num_labels, X, y, lambda_coef)).x
+                        args=(input_layer_size, hidden_layer_size, num_labels, X, Y, lambda_coef)).x
 
     Theta1 = res[:hidden_layer_size * (input_layer_size + 1)].reshape((hidden_layer_size, (input_layer_size + 1)))
     Theta2 = res[hidden_layer_size * (input_layer_size + 1):].reshape((num_labels, (hidden_layer_size + 1)))
